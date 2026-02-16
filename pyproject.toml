@@ -52,7 +52,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/fastapi_keycloak_auth"]
+packages = ["src"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -71,7 +71,7 @@ addopts = [
 ]
 
 [tool.coverage.run]
-source = ["src/fastapi_keycloak_auth"]
+source = ["src"]
 omit = ["*/tests/*", "*/test_*.py"]
 
 [tool.coverage.report]

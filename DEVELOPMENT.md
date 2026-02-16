@@ -26,7 +26,7 @@ ruff format src/
 
 ```
 fastapi-keycloak-auth/
-├── src/fastapi_keycloak_auth/    # Package source
+├── src/                          # Package source
 │   ├── __init__.py               # Public API exports
 │   ├── backend.py                # AuthBackend (from app/auth.py)
 │   ├── manager.py                # KeycloakManager (from app/managers/keycloak_manager.py)
@@ -48,13 +48,13 @@ fastapi-keycloak-auth/
 
 | Main Project File | Package File | Lines | Status |
 |-------------------|--------------|-------|--------|
-| `app/auth.py` | `src/fastapi_keycloak_auth/backend.py` | 220 | ⏳ TODO |
-| `app/managers/keycloak_manager.py` | `src/fastapi_keycloak_auth/manager.py` | 144 | ⏳ TODO |
-| `app/managers/rbac_manager.py` | `src/fastapi_keycloak_auth/rbac.py` | 168 | ⏳ TODO |
-| `app/dependencies/permissions.py` | `src/fastapi_keycloak_auth/dependencies.py` | 51 | ⏳ TODO |
-| `app/schemas/user.py` | `src/fastapi_keycloak_auth/models.py` | — | ⏳ TODO |
-| `app/exceptions.py` (auth) | `src/fastapi_keycloak_auth/exceptions.py` | — | ⏳ TODO |
-| `app/settings.py` (auth config) | `src/fastapi_keycloak_auth/config.py` | — | ⏳ TODO |
+| `app/auth.py` | `src/backend.py` | 220 | ⏳ TODO |
+| `app/managers/keycloak_manager.py` | `src/manager.py` | 144 | ⏳ TODO |
+| `app/managers/rbac_manager.py` | `src/rbac.py` | 168 | ⏳ TODO |
+| `app/dependencies/permissions.py` | `src/dependencies.py` | 51 | ⏳ TODO |
+| `app/schemas/user.py` | `src/models.py` | — | ⏳ TODO |
+| `app/exceptions.py` (auth) | `src/exceptions.py` | — | ⏳ TODO |
+| `app/settings.py` (auth config) | `src/config.py` | — | ⏳ TODO |
 
 ## Extraction Workflow
 
@@ -79,7 +79,7 @@ vim src/fastapi_keycloak_auth/exceptions.py
 cat ~/development/private/fastapi-http-websocket/app/schemas/user.py
 
 # Extract UserModel and related types
-vim src/fastapi_keycloak_auth/models.py
+vim src/models.py
 ```
 
 ### 3. Config
@@ -88,7 +88,7 @@ vim src/fastapi_keycloak_auth/models.py
 cat ~/development/private/fastapi-http-websocket/app/settings.py
 
 # Extract Keycloak-related settings
-vim src/fastapi_keycloak_auth/config.py
+vim src/config.py
 ```
 
 ### 4. Backend
@@ -97,7 +97,7 @@ vim src/fastapi_keycloak_auth/config.py
 cat ~/development/private/fastapi-http-websocket/app/auth.py
 
 # Refactor to remove project dependencies
-vim src/fastapi_keycloak_auth/backend.py
+vim src/backend.py
 ```
 
 ### 5. Manager
@@ -106,7 +106,7 @@ vim src/fastapi_keycloak_auth/backend.py
 cat ~/development/private/fastapi-http-websocket/app/managers/keycloak_manager.py
 
 # Refactor singleton pattern
-vim src/fastapi_keycloak_auth/manager.py
+vim src/manager.py
 ```
 
 ### 6. RBAC
@@ -115,7 +115,7 @@ vim src/fastapi_keycloak_auth/manager.py
 cat ~/development/private/fastapi-http-websocket/app/managers/rbac_manager.py
 
 # Decouple from PackageRouter
-vim src/fastapi_keycloak_auth/rbac.py
+vim src/rbac.py
 ```
 
 ### 7. Dependencies
@@ -124,7 +124,7 @@ vim src/fastapi_keycloak_auth/rbac.py
 cat ~/development/private/fastapi-http-websocket/app/dependencies/permissions.py
 
 # Extract require_roles()
-vim src/fastapi_keycloak_auth/dependencies.py
+vim src/dependencies.py
 ```
 
 ## Key Refactoring Patterns
@@ -141,7 +141,7 @@ from app.utils.metrics import auth_metric
 ✅ **After** (package-generic):
 ```python
 import logging
-from fastapi_keycloak_auth.config import get_settings
+from src.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -157,7 +157,7 @@ if app_settings.DEBUG_AUTH:
 
 ✅ **After** (configurable):
 ```python
-from fastapi_keycloak_auth.config import KeycloakAuthSettings
+from src.config import KeycloakAuthSettings
 
 def __init__(self, settings: KeycloakAuthSettings | None = None):
     self.settings = settings or get_settings()
