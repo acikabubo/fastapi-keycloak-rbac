@@ -1,12 +1,12 @@
 [project]
 name = "fastapi-keycloak-rbac"
-version = "0.2.0"
+version = "0.2.1"
 description = "Keycloak authentication and RBAC for FastAPI — type-safe, configurable, zero project-specific dependencies"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
-    { name = "Aleksandar Krsteski", email = "aleksandar.krsteski@ved.mk" },
+    { name = "Aleksandar Krsteski", email = "acikabubo@gmail.com" },
 ]
 keywords = ["fastapi", "keycloak", "authentication", "websocket", "rbac"]
 classifiers = [
@@ -34,14 +34,14 @@ dependencies = [
 
 [project.optional-dependencies]
 redis = [
-    "redis>=5.0.0",
+    "redis>=7.2.0",
 ]
 metrics = [
-    "prometheus-client>=0.20.0",
+    "prometheus-client>=0.24.1",
 ]
 all = [
-    "redis>=5.0.0",
-    "prometheus-client>=0.20.0",
+    "redis>=7.2.0",
+    "prometheus-client>=0.24.1",
 ]
 dev = [
     "pytest>=9.0.2",
@@ -49,8 +49,8 @@ dev = [
     "pytest-cov>=7.0.0",
     "mypy>=1.8.0",
     "ruff>=0.8.0",
-    "redis>=5.0.0",
-    "prometheus-client>=0.20.0",
+    "redis>=7.2.0",
+    "prometheus-client>=0.24.1",
     "fakeredis>=2.0.0",
 ]
 

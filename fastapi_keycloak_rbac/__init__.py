@@ -8,7 +8,7 @@ A FastAPI authentication library with Keycloak integration, featuring:
 - Configurable via environment variables or explicit settings
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 from fastapi_keycloak_rbac.backend import AuthBackend
 from fastapi_keycloak_rbac.config import KeycloakAuthSettings, get_settings
