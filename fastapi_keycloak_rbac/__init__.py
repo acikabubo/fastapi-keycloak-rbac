@@ -9,7 +9,7 @@ A FastAPI authentication library with Keycloak integration, featuring:
 - Type-safe implementation
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from fastapi_keycloak_rbac.backend import AuthBackend
 from fastapi_keycloak_rbac.config import KeycloakAuthSettings, get_settings
