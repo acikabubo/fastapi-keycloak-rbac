@@ -69,8 +69,7 @@ class TokenCache:
             from redis.asyncio import Redis
         except ImportError as exc:
             raise ImportError(
-                "Redis support requires the 'redis' extra: "
-                "pip install fastapi-keycloak-rbac[redis]"
+                "Redis support requires the 'redis' extra: pip install fastapi-keycloak-rbac[redis]"
             ) from exc
 
         self._redis: Any = Redis.from_url(redis_url, decode_responses=True)
