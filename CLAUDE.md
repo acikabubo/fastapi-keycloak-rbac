@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working on the fastapi-keycloak-auth package.
+This file provides guidance to Claude Code when working on the fastapi-keycloak-rbac package.
 
 ## 📚 Documentation
 
@@ -15,7 +15,7 @@ Extract authentication code from [fastapi-http-websocket](https://github.com/aci
 ## 📦 Package Structure
 
 ```
-fastapi-keycloak-auth/
+fastapi-keycloak-rbac/
 ├── src/                   # Package source (import: from src import ...)
 │   ├── __init__.py        # Public API exports
 │   ├── backend.py         # AuthBackend for Starlette
@@ -60,7 +60,7 @@ if app_settings.DEBUG_AUTH:
     logger.debug("Auth bypassed")
 
 # ✅ GOOD: Configurable via settings
-from src.config import KeycloakAuthSettings
+from fastapi_keycloak_rbac.config import KeycloakAuthSettings
 
 def __init__(self, settings: KeycloakAuthSettings | None = None):
     self.settings = settings or KeycloakAuthSettings()
@@ -80,7 +80,7 @@ from app.utils.metrics import auth_metric
 
 # ✅ GOOD: Generic
 import logging
-from src.config import get_settings
+from fastapi_keycloak_rbac.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -166,7 +166,7 @@ EOF
 
 ```bash
 # Development
-cd ~/development/private/fastapi-keycloak-auth
+cd ~/development/private/fastapi-keycloak-rbac
 
 # Install in editable mode
 pip install -e ".[dev]"
@@ -176,20 +176,20 @@ pytest
 pytest -v tests/test_specific.py
 
 # Type check
-mypy src/
+mypy fastapi_keycloak_rbac/
 
 # Lint
-ruff check src/
-ruff format src/
+ruff check fastapi_keycloak_rbac/
+ruff format fastapi_keycloak_rbac/
 
 # Coverage
-pytest --cov=src --cov-report=html
+pytest --cov=fastapi_keycloak_rbac --cov-report=html
 ```
 
 ## 📊 Progress Tracking
 
 Track extraction progress in:
-- **Issue #1**: https://github.com/acikabubo/fastapi-keycloak-auth/issues/1
+- **Issue #1**: https://github.com/acikabubo/fastapi-keycloak-rbac/issues/1
 - **DEVELOPMENT.md**: Update status column as modules are completed
 
 ## 🔗 Source Project

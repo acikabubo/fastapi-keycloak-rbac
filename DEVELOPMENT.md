@@ -6,7 +6,7 @@ This guide helps you work on extracting authentication code from the main projec
 
 ```bash
 # Navigate to package directory
-cd ~/development/private/fastapi-keycloak-auth
+cd ~/development/private/fastapi-keycloak-rbac
 
 # Install in development mode
 pip install -e ".[dev]"
@@ -15,17 +15,17 @@ pip install -e ".[dev]"
 pytest
 
 # Type check
-mypy src/
+mypy fastapi_keycloak_rbac/
 
 # Lint and format
-ruff check src/
-ruff format src/
+ruff check fastapi_keycloak_rbac/
+ruff format fastapi_keycloak_rbac/
 ```
 
 ## Project Structure
 
 ```
-fastapi-keycloak-auth/
+fastapi-keycloak-rbac/
 ├── src/                          # Package source
 │   ├── __init__.py               # Public API exports
 │   ├── backend.py                # AuthBackend (from app/auth.py)
@@ -66,7 +66,7 @@ Follow this order (easiest to hardest):
 cat ~/development/private/fastapi-http-websocket/app/exceptions.py
 
 # Create package file
-vim src/fastapi_keycloak_auth/exceptions.py
+vim src/fastapi_keycloak_rbac/exceptions.py
 
 # Extract only auth-related exceptions:
 # - AuthenticationError
@@ -141,7 +141,7 @@ from app.utils.metrics import auth_metric
 ✅ **After** (package-generic):
 ```python
 import logging
-from src.config import get_settings
+from fastapi_keycloak_rbac.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -157,7 +157,7 @@ if app_settings.DEBUG_AUTH:
 
 ✅ **After** (configurable):
 ```python
-from src.config import KeycloakAuthSettings
+from fastapi_keycloak_rbac.config import KeycloakAuthSettings
 
 def __init__(self, settings: KeycloakAuthSettings | None = None):
     self.settings = settings or get_settings()
@@ -197,7 +197,7 @@ def test_authentication_error():
 ## Checking Progress
 
 Track your work in:
-- **Main checklist**: https://github.com/acikabubo/fastapi-keycloak-auth/issues/1
+- **Main checklist**: https://github.com/acikabubo/fastapi-keycloak-rbac/issues/1
 - **This file**: Update status column as you complete modules
 
 ## Integration Testing
@@ -209,10 +209,10 @@ Once core modules are extracted:
 cd ~/development/private/fastapi-http-websocket
 
 # Install local package
-pip install -e ~/development/private/fastapi-keycloak-auth
+pip install -e ~/development/private/fastapi-keycloak-rbac
 
 # Test import
-python -c "from fastapi_keycloak_auth import AuthBackend; print('Success!')"
+python -c "from fastapi_keycloak_rbac import AuthBackend; print('Success!')"
 ```
 
 ## Tips
@@ -233,6 +233,6 @@ gh issue view 139
 
 Or the extraction roadmap:
 ```bash
-cd ~/development/private/fastapi-keycloak-auth
+cd ~/development/private/fastapi-keycloak-rbac
 gh issue view 1
 ```
