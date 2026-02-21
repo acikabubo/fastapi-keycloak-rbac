@@ -54,6 +54,14 @@ class KeycloakAuthSettings(BaseSettings):
     excluded_paths: str = r"^(/docs|/openapi.json|/health|/metrics)$"
     debug: bool = False
 
+    # Redis token cache (requires fastapi-keycloak-rbac[redis])
+    # Leave empty to disable caching.
+    redis_url: str = ""
+    redis_cache_ttl_buffer: int = 30
+
+    # Prometheus metrics (requires fastapi-keycloak-rbac[metrics])
+    metrics_enabled: bool = False
+
     @field_validator("excluded_paths")
     @classmethod
     def compile_excluded_paths(cls, v: str) -> str:

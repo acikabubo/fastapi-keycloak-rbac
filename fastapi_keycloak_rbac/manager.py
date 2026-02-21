@@ -6,11 +6,13 @@ management against a Keycloak server.
 """
 
 import logging
+import time
 from typing import Any
 
 from keycloak import KeycloakOpenID
 
 from fastapi_keycloak_rbac.config import KeycloakAuthSettings, get_settings
+from fastapi_keycloak_rbac.metrics import record_keycloak_duration
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +84,12 @@ class KeycloakManager:
             token = await manager.login_async("user", "pass")
             access_token = token["access_token"]
         """
-        return await self.openid.a_token(username=username, password=password)
+        t0 = time.monotonic()
+        result: dict[str, Any] = await self.openid.a_token(
+            username=username, password=password
+        )
+        record_keycloak_duration("login", time.monotonic() - t0)
+        return result
 
     async def decode_token(self, token: str) -> dict[str, Any]:
         """

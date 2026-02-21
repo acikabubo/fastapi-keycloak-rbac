@@ -1,15 +1,14 @@
 """
-FastAPI Keycloak Authentication
+FastAPI Keycloak RBAC
 
 A FastAPI authentication library with Keycloak integration, featuring:
-- HTTP and WebSocket authentication support
-- Redis-based token caching
-- Prometheus metrics
+- HTTP authentication via Starlette AuthenticationMiddleware
 - Role-based access control (RBAC)
-- Type-safe implementation
+- Type-safe implementation with mypy --strict compliance
+- Configurable via environment variables or explicit settings
 """
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 
 from fastapi_keycloak_rbac.backend import AuthBackend
 from fastapi_keycloak_rbac.config import KeycloakAuthSettings, get_settings
