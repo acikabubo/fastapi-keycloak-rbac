@@ -49,7 +49,9 @@ class TestKeycloakAuthSettings:
         assert not pattern.match("/private/data")
 
     def test_excluded_paths_invalid_regex_raises(self) -> None:
-        with pytest.raises(Exception):
+        import re
+
+        with pytest.raises(re.error):
             KeycloakAuthSettings(excluded_paths="[invalid")
 
     def test_excluded_paths_pattern_returns_compiled_regex(self) -> None:

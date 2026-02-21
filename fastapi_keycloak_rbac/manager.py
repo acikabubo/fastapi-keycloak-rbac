@@ -59,9 +59,7 @@ class KeycloakManager:
             f"(server_url={self.settings.server_url}, realm={self.settings.realm})"
         )
 
-    async def login_async(
-        self, username: str, password: str
-    ) -> dict[str, Any]:
+    async def login_async(self, username: str, password: str) -> dict[str, Any]:
         """
         Authenticate a user asynchronously and obtain tokens.
 
@@ -85,9 +83,7 @@ class KeycloakManager:
             access_token = token["access_token"]
         """
         t0 = time.monotonic()
-        result: dict[str, Any] = await self.openid.a_token(
-            username=username, password=password
-        )
+        result: dict[str, Any] = await self.openid.a_token(username=username, password=password)
         record_keycloak_duration("login", time.monotonic() - t0)
         return result
 

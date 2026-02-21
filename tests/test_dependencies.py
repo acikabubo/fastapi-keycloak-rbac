@@ -31,9 +31,7 @@ class TestRequireRoles:
         assert callable(dep)
 
     @pytest.mark.asyncio
-    async def test_grants_access_when_user_has_role(
-        self, user: UserModel
-    ) -> None:
+    async def test_grants_access_when_user_has_role(self, user: UserModel) -> None:
         request = MagicMock()
         request.user = user
 
@@ -63,9 +61,7 @@ class TestRequireRoles:
         assert exc_info.value.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_grants_access_with_no_roles_required(
-        self, user: UserModel
-    ) -> None:
+    async def test_grants_access_with_no_roles_required(self, user: UserModel) -> None:
         request = MagicMock()
         request.user = user
 

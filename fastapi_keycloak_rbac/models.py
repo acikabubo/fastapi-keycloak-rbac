@@ -78,9 +78,7 @@ class UserModel(BaseModel, BaseUser):
 
     def __init__(self, **kwargs: Any) -> None:
         kwargs["roles"] = (
-            kwargs.get("resource_access", {})
-            .get(kwargs.get("azp", ""), {})
-            .get("roles", [])
+            kwargs.get("resource_access", {}).get(kwargs.get("azp", ""), {}).get("roles", [])
         )
         super().__init__(**kwargs)
 

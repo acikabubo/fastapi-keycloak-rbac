@@ -49,9 +49,7 @@ def mock_manager() -> KeycloakManager:
 
 
 @pytest.fixture
-def backend(
-    settings: KeycloakAuthSettings, mock_manager: KeycloakManager
-) -> AuthBackend:
+def backend(settings: KeycloakAuthSettings, mock_manager: KeycloakManager) -> AuthBackend:
     return AuthBackend(settings=settings, manager=mock_manager)
 
 
@@ -87,9 +85,7 @@ class TestAuthBackendInit:
                 "fastapi_keycloak_rbac.backend.get_settings",
                 return_value=mock_settings,
             ),
-            patch(
-                "fastapi_keycloak_rbac.backend.keycloak_manager"
-            ) as mock_mgr,
+            patch("fastapi_keycloak_rbac.backend.keycloak_manager") as mock_mgr,
         ):
             backend = AuthBackend()
             assert backend.settings is mock_settings
@@ -98,9 +94,7 @@ class TestAuthBackendInit:
 
 class TestAuthenticateHTTP:
     @pytest.mark.asyncio
-    async def test_returns_none_for_excluded_path(
-        self, backend: AuthBackend
-    ) -> None:
+    async def test_returns_none_for_excluded_path(self, backend: AuthBackend) -> None:
         conn = make_http_conn("/health")
         result = await backend.authenticate(conn)
         assert result is None
@@ -135,9 +129,7 @@ class TestAuthenticateHTTP:
     async def test_raises_on_invalid_credentials(
         self, backend: AuthBackend, mock_manager: KeycloakManager
     ) -> None:
-        mock_manager.decode_token = AsyncMock(
-            side_effect=KeycloakAuthenticationError("bad")
-        )
+        mock_manager.decode_token = AsyncMock(side_effect=KeycloakAuthenticationError("bad"))
         conn = make_http_conn("/api/data")
 
         with pytest.raises(AuthenticationError, match="invalid_credentials"):
@@ -147,9 +139,7 @@ class TestAuthenticateHTTP:
     async def test_raises_on_decode_error(
         self, backend: AuthBackend, mock_manager: KeycloakManager
     ) -> None:
-        mock_manager.decode_token = AsyncMock(
-            side_effect=ValueError("cannot decode")
-        )
+        mock_manager.decode_token = AsyncMock(side_effect=ValueError("cannot decode"))
         conn = make_http_conn("/api/data")
 
         with pytest.raises(AuthenticationError, match="token_decode_error"):

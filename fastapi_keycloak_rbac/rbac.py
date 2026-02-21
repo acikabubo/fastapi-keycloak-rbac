@@ -43,9 +43,7 @@ class RBACManager:
     """
 
     @staticmethod
-    def check_user_has_roles(
-        user: UserModel, required_roles: list[str]
-    ) -> tuple[bool, list[str]]:
+    def check_user_has_roles(user: UserModel, required_roles: list[str]) -> tuple[bool, list[str]]:
         """
         Check if a user has ALL of the required roles.
 
@@ -80,9 +78,7 @@ class RBACManager:
             True if the user has all required roles (or none are required).
         """
         required_roles = permissions_registry.get(pkg_id, [])
-        has_permission, missing_roles = self.check_user_has_roles(
-            user, required_roles
-        )
+        has_permission, missing_roles = self.check_user_has_roles(user, required_roles)
 
         if not has_permission:
             logger.info(
@@ -99,9 +95,7 @@ class RBACManager:
 
         return has_permission
 
-    def require_roles(
-        self, *roles: str
-    ) -> Callable[[Request], Awaitable[None]]:
+    def require_roles(self, *roles: str) -> Callable[[Request], Awaitable[None]]:
         """
         Create a FastAPI dependency that requires ALL specified roles.
 
@@ -126,19 +120,14 @@ class RBACManager:
         """
 
         async def check_roles(request: Request) -> None:
-            if (
-                isinstance(request.user, UnauthenticatedUser)
-                or not request.user
-            ):
+            if isinstance(request.user, UnauthenticatedUser) or not request.user:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Authentication required",
                 )
 
             user: UserModel = request.user
-            has_permission, missing_roles = self.check_user_has_roles(
-                user, list(roles)
-            )
+            has_permission, missing_roles = self.check_user_has_roles(user, list(roles))
 
             if not has_permission:
                 logger.info(

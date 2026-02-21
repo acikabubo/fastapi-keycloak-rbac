@@ -18,11 +18,10 @@ def _get_sample_value(name: str, labels: dict[str, str] | None = None) -> float:
     """Read a sample value by iterating collected metrics."""
     for metric in REGISTRY.collect():
         for sample in metric.samples:
-            if sample.name == name:
-                if labels is None or all(
-                    sample.labels.get(k) == v for k, v in labels.items()
-                ):
-                    return sample.value
+            if sample.name == name and (
+                labels is None or all(sample.labels.get(k) == v for k, v in labels.items())
+            ):
+                return sample.value
     return 0.0
 
 
@@ -51,13 +50,9 @@ class TestRecordAuthAttempt:
     def test_increments_for_each_status(self, status: str) -> None:
         from fastapi_keycloak_rbac.metrics import record_auth_attempt
 
-        before = _get_sample_value(
-            "keycloak_rbac_auth_attempts_total", {"status": status}
-        )
+        before = _get_sample_value("keycloak_rbac_auth_attempts_total", {"status": status})
         record_auth_attempt(status)
-        after = _get_sample_value(
-            "keycloak_rbac_auth_attempts_total", {"status": status}
-        )
+        after = _get_sample_value("keycloak_rbac_auth_attempts_total", {"status": status})
         assert after == before + 1
 
 
@@ -66,13 +61,9 @@ class TestRecordTokenValidation:
     def test_increments_for_each_status(self, status: str) -> None:
         from fastapi_keycloak_rbac.metrics import record_token_validation
 
-        before = _get_sample_value(
-            "keycloak_rbac_token_validations_total", {"status": status}
-        )
+        before = _get_sample_value("keycloak_rbac_token_validations_total", {"status": status})
         record_token_validation(status)
-        after = _get_sample_value(
-            "keycloak_rbac_token_validations_total", {"status": status}
-        )
+        after = _get_sample_value("keycloak_rbac_token_validations_total", {"status": status})
         assert after == before + 1
 
 
@@ -106,9 +97,7 @@ class TestNoOpWhenPrometheusUnavailable:
         monkeypatch.setattr(m, "_prometheus_available", lambda: False)
         m.record_auth_attempt("success")  # should not raise
 
-    def test_record_keycloak_duration_no_op(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_record_keycloak_duration_no_op(self, monkeypatch: pytest.MonkeyPatch) -> None:
         import fastapi_keycloak_rbac.metrics as m
 
         monkeypatch.setattr(m, "_prometheus_available", lambda: False)

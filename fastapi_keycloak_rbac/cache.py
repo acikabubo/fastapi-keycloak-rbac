@@ -100,9 +100,7 @@ class TokenCache:
             logger.warning("Redis get error (fail-open): %s", exc)
             return None
 
-    async def set_cached_claims(
-        self, token: str, claims: dict[str, Any]
-    ) -> None:
+    async def set_cached_claims(self, token: str, claims: dict[str, Any]) -> None:
         """
         Store token claims in Redis with an automatic TTL.
 

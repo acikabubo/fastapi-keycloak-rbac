@@ -97,9 +97,7 @@ class AuthBackend(AuthenticationBackend):
             )
             return None
 
-    async def authenticate(
-        self, conn: HTTPConnection
-    ) -> tuple[AuthCredentials, BaseUser] | None:
+    async def authenticate(self, conn: HTTPConnection) -> tuple[AuthCredentials, BaseUser] | None:
         """
         Authenticate an incoming HTTP or WebSocket connection.
 
@@ -139,9 +137,7 @@ class AuthBackend(AuthenticationBackend):
         # --- Keycloak validation ---
         t0 = time.monotonic()
         try:
-            user_data: dict[str, Any] = await self.manager.decode_token(
-                access_token
-            )
+            user_data: dict[str, Any] = await self.manager.decode_token(access_token)
             record_keycloak_duration("validate_token", time.monotonic() - t0)
             record_token_validation("valid")
             record_auth_attempt("success")
@@ -157,18 +153,18 @@ class AuthBackend(AuthenticationBackend):
             record_token_validation("expired")
             record_auth_attempt("expired")
             logger.error("JWT token expired: %s", ex)
-            raise AuthenticationError(f"token_expired: {ex}")
+            raise AuthenticationError(f"token_expired: {ex}") from ex
 
         except KeycloakAuthenticationError as ex:
             record_keycloak_duration("validate_token", time.monotonic() - t0)
             record_token_validation("invalid")
             record_auth_attempt("invalid")
             logger.error("Invalid credentials: %s", ex)
-            raise AuthenticationError(f"invalid_credentials: {ex}")
+            raise AuthenticationError(f"invalid_credentials: {ex}") from ex
 
         except ValueError as ex:
             record_keycloak_duration("validate_token", time.monotonic() - t0)
             record_token_validation("error")
             record_auth_attempt("error")
             logger.error("Error decoding auth token: %s", ex)
-            raise AuthenticationError(f"token_decode_error: {ex}")
+            raise AuthenticationError(f"token_decode_error: {ex}") from ex

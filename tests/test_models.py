@@ -41,9 +41,7 @@ class TestUserModel:
         assert user.roles == []
 
     def test_roles_empty_when_resource_access_missing(self) -> None:
-        claims = {
-            k: v for k, v in SAMPLE_CLAIMS.items() if k != "resource_access"
-        }
+        claims = {k: v for k, v in SAMPLE_CLAIMS.items() if k != "resource_access"}
         user = UserModel(**claims)
         assert user.roles == []
 

@@ -25,12 +25,8 @@ def manager(settings: KeycloakAuthSettings) -> KeycloakManager:
 
 
 class TestKeycloakManagerInit:
-    def test_uses_provided_settings(
-        self, settings: KeycloakAuthSettings
-    ) -> None:
-        with patch(
-            "fastapi_keycloak_rbac.manager.KeycloakOpenID"
-        ) as mock_openid_cls:
+    def test_uses_provided_settings(self, settings: KeycloakAuthSettings) -> None:
+        with patch("fastapi_keycloak_rbac.manager.KeycloakOpenID") as mock_openid_cls:
             manager = KeycloakManager(settings=settings)
             assert manager.settings is settings
             mock_openid_cls.assert_called_once_with(
@@ -55,12 +51,8 @@ class TestKeycloakManagerInit:
             manager = KeycloakManager()
             assert manager.settings is mock_settings
 
-    def test_openid_attribute_set(
-        self, settings: KeycloakAuthSettings
-    ) -> None:
-        with patch(
-            "fastapi_keycloak_rbac.manager.KeycloakOpenID"
-        ) as mock_openid_cls:
+    def test_openid_attribute_set(self, settings: KeycloakAuthSettings) -> None:
+        with patch("fastapi_keycloak_rbac.manager.KeycloakOpenID") as mock_openid_cls:
             mock_instance = MagicMock()
             mock_openid_cls.return_value = mock_instance
             manager = KeycloakManager(settings=settings)
@@ -85,9 +77,7 @@ class TestLoginAsync:
         )
 
     @pytest.mark.asyncio
-    async def test_propagates_exception(
-        self, manager: KeycloakManager
-    ) -> None:
+    async def test_propagates_exception(self, manager: KeycloakManager) -> None:
         from keycloak.exceptions import KeycloakAuthenticationError
 
         manager.openid.a_token = AsyncMock(  # type: ignore[attr-defined]
@@ -114,9 +104,7 @@ class TestDecodeToken:
         manager.openid.a_decode_token.assert_called_once_with("sometoken")  # type: ignore[attr-defined]
 
     @pytest.mark.asyncio
-    async def test_propagates_exception(
-        self, manager: KeycloakManager
-    ) -> None:
+    async def test_propagates_exception(self, manager: KeycloakManager) -> None:
         manager.openid.a_decode_token = AsyncMock(  # type: ignore[attr-defined]
             side_effect=ValueError("token decode error")
         )
