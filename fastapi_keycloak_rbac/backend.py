@@ -25,7 +25,7 @@ from starlette.requests import HTTPConnection
 
 from fastapi_keycloak_rbac.config import KeycloakAuthSettings, get_settings
 from fastapi_keycloak_rbac.exceptions import AuthenticationError
-from fastapi_keycloak_rbac.manager import KeycloakManager, keycloak_manager
+from fastapi_keycloak_rbac.manager import KeycloakManager, get_keycloak_manager
 from fastapi_keycloak_rbac.metrics import (
     record_auth_attempt,
     record_cache_hit,
@@ -75,7 +75,7 @@ class AuthBackend(AuthenticationBackend):
         manager: KeycloakManager | None = None,
     ) -> None:
         self.settings = settings or get_settings()
-        self.manager = manager or keycloak_manager
+        self.manager = manager or get_keycloak_manager()
         self._cache = self._build_cache()
 
     def _build_cache(self) -> Any:
