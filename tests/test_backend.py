@@ -148,28 +148,37 @@ class TestAuthenticateHTTP:
 
 class TestAuthenticateWebSocket:
     @pytest.mark.asyncio
-    async def test_extracts_token_from_query_string(
-        self, backend: AuthBackend, mock_manager: KeycloakManager
-    ) -> None:
-        mock_manager.decode_token = AsyncMock(return_value=SAMPLE_CLAIMS)
-        conn = make_ws_conn("mytoken")
+    async def test_websocket_upgrade_returns_none(self, backend: AuthBackend) -> None:
+        """AuthBackend must return None for any WS connection.
 
+        Token auth is handled via first-message handshake in the WS handler,
+        not at the HTTP upgrade level (RFC 9700 §4.3.2).
+        """
+        conn = make_ws_conn("mytoken")
         result = await backend.authenticate(conn)
 
-        assert result is not None
-        _, user = result
-        assert user.username == "testuser"
-        mock_manager.decode_token.assert_called_once_with("mytoken")
+        assert result is None
 
     @pytest.mark.asyncio
-    async def test_ws_does_not_check_excluded_paths(
-        self, backend: AuthBackend, mock_manager: KeycloakManager
+    async def test_websocket_returns_none_regardless_of_query_params(
+        self, backend: AuthBackend
     ) -> None:
-        mock_manager.decode_token = AsyncMock(return_value=SAMPLE_CLAIMS)
-        # WebSocket with a "health" path — should still authenticate
-        qs = b"Authorization=Bearer+mytoken"
+        """WS connections return None even if a token is in the query string."""
         conn = MagicMock()
-        conn.scope = {"type": "websocket", "query_string": qs}
+        conn.scope = {"type": "websocket", "query_string": b"Authorization=Bearer+token"}
 
         result = await backend.authenticate(conn)
-        assert result is not None
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_websocket_returns_none_with_empty_query_string(
+        self, backend: AuthBackend
+    ) -> None:
+        """WS connections return None even with no query params at all."""
+        conn = MagicMock()
+        conn.scope = {"type": "websocket", "query_string": b""}
+
+        result = await backend.authenticate(conn)
+
+        assert result is None
