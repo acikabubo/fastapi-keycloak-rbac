@@ -85,7 +85,7 @@ class TestAuthBackendInit:
                 "fastapi_keycloak_rbac.backend.get_settings",
                 return_value=mock_settings,
             ),
-            patch("fastapi_keycloak_rbac.backend.keycloak_manager") as mock_mgr,
+            patch("fastapi_keycloak_rbac.backend.get_keycloak_manager") as mock_mgr,
         ):
             backend = AuthBackend()
             assert backend.settings is mock_settings
