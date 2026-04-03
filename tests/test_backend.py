@@ -89,7 +89,7 @@ class TestAuthBackendInit:
         ):
             backend = AuthBackend()
             assert backend.settings is mock_settings
-            assert backend.manager is mock_mgr
+            assert backend.manager is mock_mgr.return_value
 
 
 class TestAuthenticateHTTP:
