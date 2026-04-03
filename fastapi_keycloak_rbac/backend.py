@@ -11,7 +11,6 @@ corresponding extras are installed and configured.
 import logging
 import time
 from typing import Any
-from urllib.parse import parse_qsl
 
 from fastapi.security.utils import get_authorization_scheme_param
 from jwcrypto.jwt import JWTExpired  # type: ignore[import-untyped]
@@ -106,21 +105,24 @@ class AuthBackend(AuthenticationBackend):
 
         Returns:
             ``(AuthCredentials, UserModel)`` on success, ``None`` for excluded
-            paths (HTTP only).
+            HTTP paths or any WebSocket connection. WebSocket auth is handled
+            via a first-message handshake inside the WS handler (RFC 9700 §4.3.2).
 
         Raises:
             AuthenticationError: On token expiry, invalid credentials, or
-                                 decode errors.
+                                 decode errors (HTTP only).
         """
         logger.debug("Request type -> %s", conn.scope["type"])
 
         if conn.scope["type"] == "websocket":
-            qs = dict(parse_qsl(conn.scope["query_string"].decode("utf8")))
-            auth_header = qs.get("Authorization", "")
-        else:
-            if self.settings.excluded_paths_pattern.match(conn.url.path):
-                return None
-            auth_header = conn.headers.get("authorization", "")
+            # Token is NOT read from the query string — doing so exposes it in
+            # access logs, browser history, and proxy caches (RFC 9700 §4.3.2).
+            # Auth is handled via first-message handshake inside the WS handler.
+            return None
+
+        if self.settings.excluded_paths_pattern.match(conn.url.path):
+            return None
+        auth_header = conn.headers.get("authorization", "")
 
         _, access_token = get_authorization_scheme_param(auth_header)
 
