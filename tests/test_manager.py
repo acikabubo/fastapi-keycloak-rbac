@@ -4,9 +4,11 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from keycloak.exceptions import KeycloakAuthenticationError
 
+import fastapi_keycloak_rbac.manager as manager_module
 from fastapi_keycloak_rbac.config import KeycloakAuthSettings
-from fastapi_keycloak_rbac.manager import KeycloakManager
+from fastapi_keycloak_rbac.manager import KeycloakManager, get_keycloak_manager
 
 
 @pytest.fixture
@@ -78,8 +80,6 @@ class TestLoginAsync:
 
     @pytest.mark.asyncio
     async def test_propagates_exception(self, manager: KeycloakManager) -> None:
-        from keycloak.exceptions import KeycloakAuthenticationError
-
         manager.openid.a_token = AsyncMock(  # type: ignore[attr-defined]
             side_effect=KeycloakAuthenticationError("bad credentials")
         )
@@ -111,3 +111,29 @@ class TestDecodeToken:
 
         with pytest.raises(ValueError, match="token decode error"):
             await manager.decode_token("badtoken")
+
+
+class TestGetKeycloakManager:
+    def test_first_call_creates_instance(self) -> None:
+        manager_module._keycloak_manager = None
+        with patch("fastapi_keycloak_rbac.manager.KeycloakOpenID"):
+            instance = get_keycloak_manager()
+        assert isinstance(instance, KeycloakManager)
+
+    def test_returns_same_instance_on_subsequent_calls(self) -> None:
+        manager_module._keycloak_manager = None
+        with patch("fastapi_keycloak_rbac.manager.KeycloakOpenID"):
+            first = get_keycloak_manager()
+            second = get_keycloak_manager()
+        assert first is second
+
+    def test_import_does_not_instantiate_manager(self) -> None:
+        """Importing the module must not call KeycloakManager.__init__."""
+        import importlib
+
+        import fastapi_keycloak_rbac.manager as mod
+
+        with patch("fastapi_keycloak_rbac.manager.KeycloakOpenID") as mock_openid:
+            mod._keycloak_manager = None
+            importlib.reload(mod)
+            mock_openid.assert_not_called()

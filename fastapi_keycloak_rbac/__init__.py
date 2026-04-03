@@ -20,7 +20,7 @@ from fastapi_keycloak_rbac.exceptions import (
     PermissionDeniedError,
     TokenExpiredError,
 )
-from fastapi_keycloak_rbac.manager import KeycloakManager, keycloak_manager
+from fastapi_keycloak_rbac.manager import KeycloakManager, get_keycloak_manager
 from fastapi_keycloak_rbac.models import (
     AuthResult,
     TokenClaims,
@@ -47,7 +47,7 @@ __all__ = [
     "KeycloakAuthSettings",
     "get_settings",
     "KeycloakManager",
-    "keycloak_manager",
+    "get_keycloak_manager",
     "RBACManager",
     "rbac_manager",
     "AuthBackend",

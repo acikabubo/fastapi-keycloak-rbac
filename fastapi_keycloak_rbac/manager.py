@@ -105,5 +105,29 @@ class KeycloakManager:
         return await self.openid.a_decode_token(token)
 
 
-# Module-level singleton — initialized lazily on first import
-keycloak_manager = KeycloakManager()
+# Module-level singleton — created on first call, not at import time
+_keycloak_manager: KeycloakManager | None = None
+
+
+def get_keycloak_manager() -> KeycloakManager:
+    """Return the module-level KeycloakManager singleton, creating it on first call.
+
+    Safe to import at module level: no Keycloak connection is made until this
+    function is first called.
+
+    Returns:
+        The shared KeycloakManager instance.
+    """
+    global _keycloak_manager
+    if _keycloak_manager is None:
+        _keycloak_manager = KeycloakManager()
+    return _keycloak_manager
+
+
+def keycloak_manager() -> KeycloakManager:
+    """Backward-compatible alias for get_keycloak_manager().
+
+    .. deprecated::
+        Use :func:`get_keycloak_manager` directly.
+    """
+    return get_keycloak_manager()
