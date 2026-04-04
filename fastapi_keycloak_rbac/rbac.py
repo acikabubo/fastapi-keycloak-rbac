@@ -106,6 +106,8 @@ class RBACManager:
             An async dependency function for use with ``Depends()``.
 
         Raises:
+            ValueError: At decoration time if no roles are provided. Use
+                ``require_authenticated()`` for auth-only enforcement.
             HTTPException: 401 if user is not authenticated.
             HTTPException: 403 if user lacks required roles.
 
@@ -118,6 +120,11 @@ class RBACManager:
             async def get_reports():
                 ...
         """
+        if not roles:
+            raise ValueError(
+                "require_roles() called with no roles. "
+                "Use require_authenticated() for auth-only enforcement."
+            )
 
         async def check_roles(request: Request) -> None:
             if isinstance(request.user, UnauthenticatedUser) or not request.user:
@@ -149,6 +156,38 @@ class RBACManager:
                 )
 
         return check_roles
+
+    def require_authenticated(self) -> Callable[[Request], Awaitable[None]]:
+        """
+        Create a FastAPI dependency that requires only authentication (no specific roles).
+
+        Use this instead of ``require_roles()`` when any authenticated user
+        should be allowed access.
+
+        Returns:
+            An async dependency function for use with ``Depends()``.
+
+        Raises:
+            HTTPException: 401 if user is not authenticated.
+
+        Example::
+
+            @router.get(
+                "/profile",
+                dependencies=[Depends(rbac_manager.require_authenticated())],
+            )
+            async def get_profile():
+                ...
+        """
+
+        async def check_authenticated(request: Request) -> None:
+            if isinstance(request.user, UnauthenticatedUser) or not request.user:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Authentication required",
+                )
+
+        return check_authenticated
 
 
 # Module-level singleton instance
