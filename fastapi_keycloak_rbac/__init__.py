@@ -12,7 +12,7 @@ __version__ = "0.2.1"
 
 from fastapi_keycloak_rbac.backend import AuthBackend
 from fastapi_keycloak_rbac.config import KeycloakAuthSettings, get_settings
-from fastapi_keycloak_rbac.dependencies import require_roles
+from fastapi_keycloak_rbac.dependencies import require_authenticated, require_roles
 from fastapi_keycloak_rbac.exceptions import (
     AuthenticationError,
     AuthorizationError,
@@ -52,4 +52,5 @@ __all__ = [
     "rbac_manager",
     "AuthBackend",
     "require_roles",
+    "require_authenticated",
 ]

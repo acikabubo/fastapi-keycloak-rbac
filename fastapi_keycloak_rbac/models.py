@@ -4,8 +4,8 @@ Data models for fastapi-keycloak-rbac.
 Defines UserModel (parsed from Keycloak JWT claims) and TokenClaims TypedDict.
 """
 
+import time
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any, NewType
 
 from pydantic import BaseModel, Field
@@ -85,7 +85,7 @@ class UserModel(BaseModel, BaseUser):
     @property
     def expired_seconds(self) -> int:
         """Seconds remaining until token expiry (may be negative if expired)."""
-        return self.expired_in - int(datetime.now().timestamp())
+        return self.expired_in - int(time.time())
 
     def __hash__(self) -> int:
         return hash(self.id)
