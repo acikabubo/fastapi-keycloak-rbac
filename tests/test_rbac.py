@@ -108,13 +108,32 @@ class TestRequireRoles:
 
         assert exc_info.value.status_code == 401
 
+    def test_raises_value_error_when_no_roles_given(self, rbac: RBACManager) -> None:
+        with pytest.raises(ValueError, match="require_roles\\(\\) called with no roles"):
+            rbac.require_roles()
+
     @pytest.mark.asyncio
-    async def test_grants_when_no_roles_required(self, rbac: RBACManager, user: UserModel) -> None:
+    async def test_require_authenticated_grants_authenticated_user(
+        self, rbac: RBACManager, user: UserModel
+    ) -> None:
         request = MagicMock()
         request.user = user
 
-        dep = rbac.require_roles()
+        dep = rbac.require_authenticated()
         await dep(request)  # should not raise
+
+    @pytest.mark.asyncio
+    async def test_require_authenticated_raises_401_when_unauthenticated(
+        self, rbac: RBACManager
+    ) -> None:
+        request = MagicMock()
+        request.user = UnauthenticatedUser()
+
+        dep = rbac.require_authenticated()
+        with pytest.raises(HTTPException) as exc_info:
+            await dep(request)
+
+        assert exc_info.value.status_code == 401
 
     @pytest.mark.asyncio
     async def test_requires_all_roles(self, rbac: RBACManager, user: UserModel) -> None:

@@ -6,7 +6,7 @@ import pytest
 from fastapi import HTTPException
 from starlette.authentication import UnauthenticatedUser
 
-from fastapi_keycloak_rbac.dependencies import require_roles
+from fastapi_keycloak_rbac.dependencies import require_authenticated, require_roles
 from fastapi_keycloak_rbac.models import UserModel
 
 SAMPLE_CLAIMS = {
@@ -60,13 +60,30 @@ class TestRequireRoles:
 
         assert exc_info.value.status_code == 401
 
+    def test_raises_value_error_when_no_roles_given(self) -> None:
+        with pytest.raises(ValueError, match="require_roles\\(\\) called with no roles"):
+            require_roles()
+
+
+class TestRequireAuthenticated:
     @pytest.mark.asyncio
-    async def test_grants_access_with_no_roles_required(self, user: UserModel) -> None:
+    async def test_grants_authenticated_user(self, user: UserModel) -> None:
         request = MagicMock()
         request.user = user
 
-        dep = require_roles()
+        dep = require_authenticated()
         await dep(request)  # should not raise
+
+    @pytest.mark.asyncio
+    async def test_raises_401_when_unauthenticated(self) -> None:
+        request = MagicMock()
+        request.user = UnauthenticatedUser()
+
+        dep = require_authenticated()
+        with pytest.raises(HTTPException) as exc_info:
+            await dep(request)
+
+        assert exc_info.value.status_code == 401
 
     @pytest.mark.asyncio
     async def test_requires_all_roles(self, user: UserModel) -> None:

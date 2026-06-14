@@ -24,6 +24,7 @@ def require_roles(*roles: str) -> Callable[[Request], Awaitable[None]]:
         An async dependency function for use with ``Depends()``.
 
     Raises:
+        ValueError: At decoration time if no roles are provided.
         HTTPException: 401 if not authenticated, 403 if missing roles.
 
     Example::
@@ -41,3 +42,32 @@ def require_roles(*roles: str) -> Callable[[Request], Awaitable[None]]:
             return {"authors": []}
     """
     return rbac_manager.require_roles(*roles)
+
+
+def require_authenticated() -> Callable[[Request], Awaitable[None]]:
+    """
+    Create a FastAPI dependency that requires only authentication (no specific roles).
+
+    Convenience wrapper around ``rbac_manager.require_authenticated()``.
+
+    Returns:
+        An async dependency function for use with ``Depends()``.
+
+    Raises:
+        HTTPException: 401 if not authenticated.
+
+    Example::
+
+        from fastapi import APIRouter, Depends
+        from fastapi_keycloak_rbac.dependencies import require_authenticated
+
+        router = APIRouter()
+
+        @router.get(
+            "/profile",
+            dependencies=[Depends(require_authenticated())],
+        )
+        async def get_profile():
+            return {"profile": {}}
+    """
+    return rbac_manager.require_authenticated()
